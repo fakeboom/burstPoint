@@ -5,7 +5,7 @@
 
 
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.6.12;
 
 /*
  * @dev Provides information about the current execution context, including the
@@ -33,7 +33,7 @@ abstract contract Context {
 
 
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.6.12;
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where
@@ -103,7 +103,7 @@ abstract contract Ownable is Context {
 // File contracts/BurstPointSapp.sol
 
 pragma experimental ABIEncoderV2;
-pragma solidity 0.6.12;
+pragma solidity ^0.6.12;
 
 //mark the status of  BetRecord 
 enum BRecordStatus { Invalid, Bet, Escape}
