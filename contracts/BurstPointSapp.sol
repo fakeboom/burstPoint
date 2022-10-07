@@ -1,7 +1,5 @@
 pragma experimental ABIEncoderV2;
 pragma solidity 0.6.12;
-import "hardhat/console.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 
@@ -25,7 +23,7 @@ struct BetRecord{
 
 //game record
 struct GameRecord{
-    bytes32 burstSha256;
+    uint256 burstValue;
     mapping(address => BetRecord) betRecords;
     address [] playerAddresses;
     GRecordStatus status;
@@ -33,7 +31,7 @@ struct GameRecord{
 
 contract BurstPoint is Ownable{
 
-    mapping(uint256 => GameRecord)  gameRecords;
+    mapping(uint256 => GameRecord) private gameRecords;
 
     //BurstValue expand 100 times ---- 1.1 => 110 
     uint256 public multiple = 100; 
@@ -41,7 +39,7 @@ contract BurstPoint is Ownable{
     //player can bet after game begin and last 10 blockNumber
     uint256 public betLast = 10;
 
-    //player can escape after bet end and last 100 blockNumber
+    //player can escape after bet end and last 100 blockNumber, so burstValue less than 1100
     uint256 public gameLast = 100;
 
     //BurstValue increase 10 perBlock
@@ -57,12 +55,20 @@ contract BurstPoint is Ownable{
     }
 
 
+    //get a random value in [0, number]
+    function random(uint number) public view returns(uint) {
+        return uint(keccak256(abi.encodePacked(block.timestamp,block.difficulty,  
+            msg.sender))) % number;
+    }
+
+
     //begin a singel Game and set burstValue by sha256
     // id : the blockNumber of the game start at  
 
-    function beginGame(uint256 id, bytes32 burstSha256) external onlyOwner{
+    function beginGame(uint256 id) external onlyOwner{
         address[] memory playerAddresses = new address[](0);
-        GameRecord memory gRecord  = GameRecord(burstSha256, playerAddresses, GRecordStatus.Pending);
+        uint256 burstValue = random(1100);
+        GameRecord memory gRecord  = GameRecord(burstValue, playerAddresses, GRecordStatus.Pending);
         gameRecords[id] = gRecord;
     }
 
@@ -73,6 +79,7 @@ contract BurstPoint is Ownable{
         require(gameRecord.status == GRecordStatus.Pending 
             && block.number <= id + betLast 
             && gameRecord.betRecords[msg.sender].status == BRecordStatus.Invalid
+            ,"bet time error or have already bet"
             );
 
         BetRecord memory r = BetRecord(msg.value, burstValue, 0, BRecordStatus.Bet);
@@ -82,11 +89,11 @@ contract BurstPoint is Ownable{
     }
 
     function escape(uint256 id) external {
-        require(block.number > id + betLast && block.number <= id + betLast + gameLast);
+        require(block.number > id + betLast && block.number <= id + betLast + gameLast, "escape time error");
         GameRecord storage gameRecord =  gameRecords[id];
-        require( gameRecord.status == GRecordStatus.Pending);
+        require( gameRecord.status == GRecordStatus.Pending, "game not start");
         BetRecord storage r = gameRecord.betRecords[msg.sender];
-        require(r.status == BRecordStatus.Bet);
+        require(r.status == BRecordStatus.Bet, "it is not right status to escape");
         r.escapeBlockNum = block.number;
 
         //r.multi = (block.number - blockNum) * (r.multi - 100) / 100 + 100;
@@ -100,12 +107,11 @@ contract BurstPoint is Ownable{
 
     //close the game and transfer the reword player should get
     //normally burstValue > 100
-    function closeGame(uint256 id, uint256 burstValue, string memory password) external onlyOwner {
-        require(block.number > id + betLast + gameLast);
+    function closeGame(uint256 id) external onlyOwner {
+        require(block.number > id + betLast + gameLast, "close time error");
         GameRecord storage gameRecord =  gameRecords[id];
-        require( gameRecord.status == GRecordStatus.Pending);
-        bytes32 gen = sha256(abi.encode(string(abi.encodePacked(Strings.toString(burstValue), password))));
-        require( gen == gameRecord.burstSha256 );
+        require( gameRecord.status == GRecordStatus.Pending, "game not start");
+        uint256 burstValue = gameRecord.burstValue;
         address[] memory playerAddresses = gameRecord.playerAddresses;
         for(uint i = 0; i < playerAddresses.length; i++){
             BetRecord memory r = gameRecord.betRecords[playerAddresses[i]];

@@ -6,6 +6,7 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+import '@oasisprotocol/sapphire-hardhat';
 
 dotenv.config();
 
@@ -55,7 +56,15 @@ const config: HardhatUserConfig = {
       url : 'https://emerald.oasis.dev',
       accounts:
       process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-    }
+    },
+    sapphire: {
+      // This is Testnet! If you want Mainnet, add a new network config item.
+      chainId: 0x5aff,
+      url: "https://testnet.sapphire.oasis.dev",
+      accounts:
+      process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
+
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,

@@ -6,11 +6,11 @@ import { ethers } from "hardhat";
 import { expect } from "chai";
 
 
-describe("Sapp Test contract", function() {
+describe("Token contract", function() {
   it("Deployment should assign the total supply of tokens to the owner", async function() {
     const [owner, addr1] = await ethers.getSigners();
 
-    const Token = await ethers.getContractFactory("contracts/BurstPointSapp.sol:BurstPoint");
+    const Token = await ethers.getContractFactory("contracts/BurstPoint.sol:BurstPoint");
 
     const hardhatToken = await Token.deploy();
     await hardhatToken.deployed();
@@ -28,17 +28,17 @@ describe("Sapp Test contract", function() {
 
     // const strRe = await hardhatToken.testStr(100, "test");
     // console.log(strRe);
-    let nowBlockNumber =  await ethers.provider.getBlockNumber()
-    console.log("block number", await ethers.provider.getBlockNumber())
 
-    await hardhatToken.beginGame(nowBlockNumber);
+    const str = "300test";
+    console.log(encodeParameters(["string"],[str]));
+    console.log(sha256(encodeParameters(["string"],[str])).toString());
+    await hardhatToken.beginGame(0, sha256(encodeParameters(["string"],[str])));
 
+    await hardhatToken.connect(addr1).bet(0, 200, {value: 100});
 
-    await hardhatToken.connect(addr1).bet(nowBlockNumber, 200, {value: 100});
+    await advanceBlockTo(50);
 
-    await advanceBlockTo(nowBlockNumber + 50);
-
-    await hardhatToken.connect(addr1).escape(nowBlockNumber);
+    await hardhatToken.connect(addr1).escape(0);
 
 
     ownerBalance1 = await hardhatToken.totalBalance();
@@ -47,9 +47,9 @@ describe("Sapp Test contract", function() {
     const addr1blance1 = await ethers.provider.getBalance(addr1.address);
     console.log(addr1blance1);
 
-    await advanceBlockTo(nowBlockNumber + 111);
+    await advanceBlockTo(111);
 
-    await hardhatToken.closeGame(nowBlockNumber);
+    await hardhatToken.closeGame(0, 300, "test");
 
     const ownerBalance2 = await hardhatToken.totalBalance();
     console.log(ownerBalance2);
@@ -57,7 +57,7 @@ describe("Sapp Test contract", function() {
     const addr1blance = await ethers.provider.getBalance(addr1.address);
     console.log(addr1blance);
 
-    const aaa = await hardhatToken.getGameRecords(nowBlockNumber);
+    const aaa = await hardhatToken.getGameRecords(0);
     console.log(aaa);
 
     //expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
