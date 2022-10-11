@@ -72,6 +72,12 @@ contract BurstPoint is Ownable{
         gameRecords[id] = gRecord;
     }
 
+    function getBurstValue(uint256 id) external view onlyOwner returns(uint256){
+        GameRecord storage gameRecord =  gameRecords[id];
+        require(gameRecord.status != GRecordStatus.Invalid, "game is not exist");
+        return  gameRecord.burstValue;
+    }
+
 
     //player guess the burstValue
     function bet(uint256 id, uint256 burstValue) external payable {

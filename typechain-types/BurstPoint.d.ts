@@ -28,6 +28,7 @@ interface BurstPointInterface extends ethers.utils.Interface {
     "closeGame(uint256)": FunctionFragment;
     "escape(uint256)": FunctionFragment;
     "gameLast()": FunctionFragment;
+    "getBurstValue(uint256)": FunctionFragment;
     "getGameRecords(uint256)": FunctionFragment;
     "increasePerBlock()": FunctionFragment;
     "multiple()": FunctionFragment;
@@ -57,6 +58,10 @@ interface BurstPointInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "gameLast", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "getBurstValue",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "getGameRecords",
     values: [BigNumberish]
@@ -91,6 +96,10 @@ interface BurstPointInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "closeGame", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "escape", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "gameLast", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getBurstValue",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getGameRecords",
     data: BytesLike
@@ -196,6 +205,11 @@ export class BurstPoint extends BaseContract {
 
     gameLast(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    getBurstValue(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     getGameRecords(
       id: BigNumberish,
       overrides?: CallOverrides
@@ -263,6 +277,11 @@ export class BurstPoint extends BaseContract {
 
   gameLast(overrides?: CallOverrides): Promise<BigNumber>;
 
+  getBurstValue(
+    id: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   getGameRecords(
     id: BigNumberish,
     overrides?: CallOverrides
@@ -317,6 +336,11 @@ export class BurstPoint extends BaseContract {
     escape(id: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     gameLast(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getBurstValue(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getGameRecords(
       id: BigNumberish,
@@ -397,6 +421,11 @@ export class BurstPoint extends BaseContract {
 
     gameLast(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getBurstValue(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getGameRecords(
       id: BigNumberish,
       overrides?: CallOverrides
@@ -451,6 +480,11 @@ export class BurstPoint extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     gameLast(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getBurstValue(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     getGameRecords(
       id: BigNumberish,

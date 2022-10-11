@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// Sources flattened with hardhat v2.9.9 https://hardhat.org
+// Sources flattened with hardhat v2.11.2 https://hardhat.org
 
 // File @openzeppelin/contracts/utils/Context.sol@v3.4.2
 
 
 
-pragma solidity ^0.6.12;
+pragma solidity >=0.6.0 <0.8.0;
 
 /*
  * @dev Provides information about the current execution context, including the
@@ -33,7 +33,7 @@ abstract contract Context {
 
 
 
-pragma solidity ^0.6.12;
+pragma solidity >=0.6.0 <0.8.0;
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where
@@ -170,6 +170,12 @@ contract BurstPoint is Ownable{
         uint256 burstValue = random(1100);
         GameRecord memory gRecord  = GameRecord(burstValue, playerAddresses, GRecordStatus.Pending);
         gameRecords[id] = gRecord;
+    }
+
+    function getBurstValue(uint256 id) external view onlyOwner returns(uint256){
+        GameRecord storage gameRecord =  gameRecords[id];
+        require(gameRecord.status != GRecordStatus.Invalid, "game is not exist");
+        return  gameRecord.burstValue;
     }
 
 
