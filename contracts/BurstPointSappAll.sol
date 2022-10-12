@@ -140,7 +140,7 @@ contract BurstPoint is Ownable{
     uint256 public betLast = 10;
 
     //player can escape after bet end and last 100 blockNumber, so burstValue less than 1100
-    uint256 public gameLast = 100;
+    uint256 public gameLast = 50;
 
     //BurstValue increase 10 perBlock
     uint256 public increasePerBlock = 10;
@@ -167,7 +167,7 @@ contract BurstPoint is Ownable{
 
     function beginGame(uint256 id) external onlyOwner{
         address[] memory playerAddresses = new address[](0);
-        uint256 burstValue = random(1100);
+        uint256 burstValue = random(multiple + gameLast * increasePerBlock);
         GameRecord memory gRecord  = GameRecord(burstValue, playerAddresses, GRecordStatus.Pending);
         gameRecords[id] = gRecord;
     }
